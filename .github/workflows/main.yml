@@ -38,8 +38,10 @@ jobs:
           token: ${{ secrets.TUTU_RElEASE_TOKEN }} # `GH_PAT` is a secret that contains your PAT
           path: TuTu
 
+
       - name: 打印当前工程信息
         run: |
+          cd TuTu
           ls -la
 
       - name: FlutterAction
