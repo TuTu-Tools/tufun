@@ -31,7 +31,7 @@ jobs:
             output: Release
 
     steps:
-      - name: 代码检出
+      - name: PullTuTuCode
         uses: actions/checkout@v4
         with:
           repository: TuTu-Tools/TuTu
@@ -39,7 +39,7 @@ jobs:
           path: TuTu
 
 
-      - name: 打印当前工程信息
+      - name: PrintProjectInfo
         run: |
           cd TuTu
           ls -la
@@ -49,18 +49,18 @@ jobs:
         with:
           channel: "stable"
 
-      - name: 下载依赖
+      - name: FlutterPubGet
         run: flutter pub get
 
-      - name: 生成代码
+      - name: FlutterRunner
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: 获取版本号
+      - name: GetVersion(macos)
         if: ${{ matrix.type == 'macos' }}
         run: |
           echo "version=$(awk -F': ' '/version:/ {gsub("\\+", "-", $2); print $2}' pubspec.yaml)" >> "$GITHUB_ENV"
 
-      - name: 获取版本号(windows)
+      - name: GetVersion(windows)
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
         run: |
@@ -68,32 +68,32 @@ jobs:
           $version = $Matches[1] -replace '\+', '-'
           echo "version=$version" | Out-File -Append -Encoding utf8 -FilePath $Env:GITHUB_ENV
 
-      - name: 打印版本号
+      - name: PrintVersion
         run: |
           echo "version: ${{ env.version }}"
 
-      - name: 打包Macos
+      - name: Build(MacOS)
         if: ${{ matrix.type == 'macos' }}
         run: flutter build macos
 
-      - name: MacosCreateDmg
+      - name: BuildDMG(MacOS)
         if: ${{ matrix.type == 'macos' }}
         uses: L-Super/create-dmg-actions@v1.0.3
         with:
           dmg_name: "TuTu"
           src_dir: ${{ matrix.output }}
 
-      - name: 打包Windows
+      - name: Build(Windows)
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
         run: flutter build windows
 
-      - name: 压缩产物
-        if: ${{ matrix.type != 'windows' }}
+      - name: ZIP(MacOS)
+        if: ${{ matrix.type == 'macos' }}
         run: |
           tar -czvf ${{ github.event.repository.name }}-${{ matrix.type }}.tar.gz -C ${{ matrix.path }} ${{ matrix.output }}
 
-      - name: 压缩产物(windows)
+      - name: ZIP(windows)
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
         run: |
