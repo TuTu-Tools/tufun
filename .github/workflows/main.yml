@@ -38,9 +38,7 @@ jobs:
           token: ${{ secrets.TUTU_RElEASE_TOKEN }} # `GH_PAT` is a secret that contains your PAT
           path: TuTu
 
-
-      - name: PrintProjectInfo
-        run: |
+      - run: |
           cd TuTu
           ls -la
 
@@ -48,12 +46,13 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: "stable"
+          flutter-version: 3.24.5
 
-      - name: FlutterPubGet
-        run: flutter pub get
+      - run: flutter --version
 
-      - name: FlutterRunner
-        run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter pub get
+
+      - run: dart run build_runner build --delete-conflicting-outputs
 
       - name: GetVersion(macos)
         if: ${{ matrix.type == 'macos' }}
