@@ -42,8 +42,6 @@ jobs:
           token: ${{ secrets.TUTU_RElEASE_TOKEN }} # `GH_PAT` is a secret that contains your PAT
           path: TuTu
 
-      - run: ls -la
-
       - name: FlutterAction
         uses: subosito/flutter-action@v2
         with:
