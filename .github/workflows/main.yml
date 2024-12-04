@@ -15,10 +15,6 @@ jobs:
     name: Build
     # 运行环境，基于矩阵策略
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        shell: bash
-        working-directory: ./TuTu
 
     strategy:
       matrix:
@@ -43,25 +39,32 @@ jobs:
           path: TuTu
 
       - run: ls -la
+        working-directory: ./TuTu
 
       - name: FlutterAction
         uses: subosito/flutter-action@v2
+        working-directory: ./TuTu
         with:
           channel: "stable"
           flutter-version: 3.24.5
 
       - run: flutter --version
+        working-directory: ./TuTu
 
       - run: flutter pub get
+        working-directory: ./TuTu
 
       - run: dart run build_runner build --delete-conflicting-outputs
+        working-directory: ./TuTu
 
       - name: GetVersion(macos)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
         run: |
           echo "version=$(awk -F': ' '/version:/ {gsub("\\+", "-", $2); print $2}' pubspec.yaml)" >> "$GITHUB_ENV"
 
       - name: GetVersion(windows)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
         run: |
@@ -70,14 +73,19 @@ jobs:
           echo "version=$version" | Out-File -Append -Encoding utf8 -FilePath $Env:GITHUB_ENV
 
       - name: PrintVersion
+        working-directory: ./TuTu
         run: |
           echo "version: ${{ env.version }}"
+          echo "path ${{ matrix.path }}"
+          echo "output ${{ matrix.output }}"
 
       - name: Build(MacOS)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
         run: flutter build macos
 
       - name: BuildDMG(MacOS)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
         uses: L-Super/create-dmg-actions@v1.0.3
         with:
@@ -85,16 +93,19 @@ jobs:
           src_dir: ${{ matrix.output }}
 
       - name: Build(Windows)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
         run: flutter build windows
 
       - name: ZIP(MacOS)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
         run: |
           tar -czvf ${{ github.event.repository.name }}-${{ matrix.type }}.tar.gz -C ${{ matrix.path }} ${{ matrix.output }}
 
       - name: ZIP(windows)
+        working-directory: ./TuTu
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
         run: |
@@ -102,6 +113,7 @@ jobs:
 
       - name: Release
         uses: ncipollo/release-action@v1
+        working-directory: ./TuTu
         with:
           tag: "v${{ env.version }}"
           draft: false
