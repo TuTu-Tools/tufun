@@ -15,6 +15,7 @@ jobs:
     name: Build
     # 运行环境，基于矩阵策略
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
     defaults:
       run:
         working-directory: ./TuTu
