@@ -42,7 +42,6 @@ jobs:
         working-directory: ./TuTu
 
       - name: FlutterAction
-        working-directory: ./TuTu
         uses: subosito/flutter-action@v2
         with:
           channel: "stable"
@@ -58,15 +57,16 @@ jobs:
         working-directory: ./TuTu
 
       - name: GetVersion(macos)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
+        working-directory: ./TuTu
         run: |
           echo "version=$(awk -F': ' '/version:/ {gsub("\\+", "-", $2); print $2}' pubspec.yaml)" >> "$GITHUB_ENV"
+        
 
       - name: GetVersion(windows)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
+        working-directory: ./TuTu
         run: |
           $version = (Get-Content pubspec.yaml -Raw) -match 'version:\s*([^\s]+)' | Out-Null
           $version = $Matches[1] -replace '\+', '-'
@@ -80,12 +80,11 @@ jobs:
           echo "output ${{ matrix.output }}"
 
       - name: Build(MacOS)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
+        working-directory: ./TuTu
         run: flutter build macos
 
       - name: BuildDMG(MacOS)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
         uses: L-Super/create-dmg-actions@v1.0.3
         with:
@@ -93,26 +92,25 @@ jobs:
           src_dir: ${{ matrix.output }}
 
       - name: Build(Windows)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
+        working-directory: ./TuTu
         run: flutter build windows
 
       - name: ZIP(MacOS)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'macos' }}
+        working-directory: ./TuTu
         run: |
           tar -czvf ${{ github.event.repository.name }}-${{ matrix.type }}.tar.gz -C ${{ matrix.path }} ${{ matrix.output }}
 
       - name: ZIP(windows)
-        working-directory: ./TuTu
         if: ${{ matrix.type == 'windows' }}
         shell: pwsh
+        working-directory: ./TuTu
         run: |
           Compress-Archive -Path '${{ matrix.path }}\${{ matrix.output }}' -DestinationPath '${{ github.event.repository.name }}-${{ matrix.type }}.zip'
 
       - name: Release
-        working-directory: ./TuTu
         uses: ncipollo/release-action@v1
         with:
           tag: "v${{ env.version }}"
