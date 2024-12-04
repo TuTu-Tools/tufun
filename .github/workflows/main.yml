@@ -42,8 +42,8 @@ jobs:
         working-directory: ./TuTu
 
       - name: FlutterAction
-        uses: subosito/flutter-action@v2
         working-directory: ./TuTu
+        uses: subosito/flutter-action@v2
         with:
           channel: "stable"
           flutter-version: 3.24.5
@@ -112,8 +112,8 @@ jobs:
           Compress-Archive -Path '${{ matrix.path }}\${{ matrix.output }}' -DestinationPath '${{ github.event.repository.name }}-${{ matrix.type }}.zip'
 
       - name: Release
-        uses: ncipollo/release-action@v1
         working-directory: ./TuTu
+        uses: ncipollo/release-action@v1
         with:
           tag: "v${{ env.version }}"
           draft: false
