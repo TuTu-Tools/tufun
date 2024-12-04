@@ -15,6 +15,10 @@ jobs:
     name: Build
     # 运行环境，基于矩阵策略
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+        working-directory: ./TuTu
 
     strategy:
       matrix:
@@ -38,9 +42,7 @@ jobs:
           token: ${{ secrets.TUTU_RElEASE_TOKEN }} # `GH_PAT` is a secret that contains your PAT
           path: TuTu
 
-      - run: |
-          cd TuTu
-          ls -la
+      - run: ls -la
 
       - name: FlutterAction
         uses: subosito/flutter-action@v2
